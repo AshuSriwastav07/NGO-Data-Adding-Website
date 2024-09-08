@@ -5,7 +5,7 @@ import { getDatabase, ref, set, push, update } from "firebase/database";
 const firebaseConfig = {
   // ...
   // The value of `databaseURL` depends on the location of the database
-  databaseURL: `${import.meta.env.VITE_REACT_APP_FIREBASE_DB_LINK}`,
+  databaseURL: import.meta.env.VITE_REACT_APP_FIREBASE_DB_LINK,
 };
 
 // Initialize Firebase
