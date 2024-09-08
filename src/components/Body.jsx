@@ -258,7 +258,7 @@ const Body = () => {
             <div className='flex flex-col justify-around md:flex-row sm:flex-col'>
                 {/* Form 1: NGO Details */}
                 <div>
-                    <form className='px-3 py-3' onSubmit={handleSubmitNGO} id='NGODataForm'>
+                    <form className='px-3 py-3 sm:text-1' onSubmit={handleSubmitNGO} id='NGODataForm'>
                         <h6 className="mt-1 text-sm leading-6 text-gray-600 ">
                             NGO Details. This information will be displayed publicly so be careful what you share.
                         </h6>
