@@ -10,7 +10,7 @@ function App() {
     <>
     
       <Header/>
-      <div className="bg-amber-200 h-screen max-w-screen">
+      <div className="bg-amber-200 max-h-max max-w-screen">
         <Body/>
         <Footer/>
         <Main/>
