@@ -284,7 +284,7 @@ const Body = () => {
                             <div className='w-44'>
                                 <label htmlFor="address" className='font-bold w-30'>NGO Address</label>
                             </div>
-                            <textarea
+                            <input
                                 id="address"
                                 name="1" // Store in the second index of the NGO array
                                 placeholder="NGO Address"
