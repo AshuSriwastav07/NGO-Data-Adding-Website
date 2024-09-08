@@ -27,7 +27,7 @@ NGO Finder is a platform designed to help users upload and manage NGO data. This
 
 ### View Data
 
-- Users can view the verified NGO data on the app, accessible from the main interface.
+- Users can view the verified NGO data on the app, which is accessible from the main interface.
 ## 1. Installation
 
 - Clone the repository:
