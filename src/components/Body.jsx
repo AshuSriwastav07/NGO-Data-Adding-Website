@@ -510,7 +510,7 @@ const Body = () => {
                                 type="link"
                                 id="ngoSiteLink"
                                 onChange={handleNGODonationDataChange}
-                                name="3" // Store in the fourth index of the Donation array
+                                name="4" // Store in the fourth index of the Donation array
                                 className='w-60'
                                 placeholder="NGO Site Link"
                                 required
