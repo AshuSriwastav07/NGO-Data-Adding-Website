@@ -8,8 +8,8 @@ const Body = () => {
     const [CurrentNGOData, setCurrentNGOData] = useState(0);
     const [CurrentNGONonVerifyData, setCurrentNGONonVerifyData] = useState(0);
     const [CurrentDonationNGOData, setCurrentDonationNGOData] = useState(0);
+    const [NonVerifyDonationNGOData, setNonVerifyDonationNGOData] = useState(0);
     const [newData, setNewData] = useState([]); // Will store NGO form data as an array
-    const [newDonationData, setNewDonationData] = useState([]); // Will store Donation form data as an array
     const [newKeyValue, setNewKeyValue] = useState(0);
     const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -71,7 +71,7 @@ const Body = () => {
             return updatedData;
         });
 
-        
+
     };
 
     // Handle Donation form data and store it in an array
@@ -122,7 +122,7 @@ const Body = () => {
                         // Optionally hide the message after a few seconds
                         setTimeout(() => setIsSubmitted(false), 3000);
 
-                    
+
                     })
                     .catch(error => {
                         console.error("Error adding data:", error);
@@ -135,17 +135,123 @@ const Body = () => {
     };
 
 
-    // Handle Donation form submission
-    const handleSubmitDonation = (event) => {
+    // Donation Data Handling
+
+    useEffect(() => {
+        const db = getDatabase();
+
+        // Fetch NGO_DATA count from 'DataToVerify' node
+        const ngoNonVerifyData = ref(db, 'donation');
+        onValue(ngoNonVerifyData, (snapshot) => {
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                setCurrentDonationNGOData(Object.keys(data).length);
+            } else {
+                // Node doesn't exist, so set count to 0
+                setCurrentDonationNGOData(0);
+            }
+        }, (error) => {
+            console.error("Error fetching NGO data:", error);
+            // Handle error (e.g., set fallback value)
+            setCurrentDonationNGOData(0);
+        });
+    }, []);
+
+
+    useEffect(() => {
+        const db = getDatabase();
+
+        // Fetch NGO_DATA count from 'DataToVerify' node
+        const ngoVerifyedData = ref(db, 'DonationDataToVerify');
+        onValue(ngoVerifyedData, (snapshot) => {
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                setNonVerifyDonationNGOData(Object.keys(data).length);
+            } else {
+                // Node doesn't exist, so set count to 0
+                setNonVerifyDonationNGOData(0);
+            }
+        }, (error) => {
+            console.error("Error fetching NGO data:", error);
+            // Handle error (e.g., set fallback value)
+            setNonVerifyDonationNGOData(0);
+        });
+    }, []);
+
+
+    const handleNGODonationDataChange = (event) => {
+        const { name, value } = event.target;
+        setNewData((prevData) => {
+            const updatedData = [...prevData]; // Clone previous NGO data array
+            updatedData[name] = value; // Store values based on the order of inputs
+            return updatedData;
+        });
+
+
+    };
+    
+
+    const handleSubmitNGODonationData = (event) => {
         event.preventDefault();
         const db = getDatabase();
 
-        // Create a new unique key based on newKeyValue for Donation data
-        const newKey = newKeyValue;
+        // Reference to the DataToVerify node
+        const dataToVerifyRef = ref(db, 'DonationDataToVerify');
 
-        // Save the Donation data array in Firebase under DonationDataToVerify
-        set(ref(db, `DonationDataToVerify/${newKey}`), newDonationData);
+        // Fetch all existing keys once (not using onValue to avoid persistent listening)
+        get(dataToVerifyRef)
+            .then((snapshot) => {
+                let existingKeys = [];
+
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    // Extract existing keys as numbers (e.g., 'NGO_Finder_Data_16' -> 16)
+                    existingKeys = Object.keys(data)
+                        .map(key => parseInt(key.split('_').pop())) // Extract the numeric part of the key
+                        .filter(key => !isNaN(key)) // Filter out any non-number keys just in case
+                        .sort((a, b) => a - b); // Sort the keys in ascending order
+                }
+
+                let nextAvailableKey;
+
+                // If DataToVerify is empty or NaN
+                if (existingKeys.length === 0) {
+                    // Set the new key based on CurrentNGOData + 1
+                    nextAvailableKey = CurrentDonationNGOData + 1;
+                } else {
+                    // Get the last key (highest value) and increment by 1
+                    nextAvailableKey = Math.max(...existingKeys) + 1;
+                }
+
+                // Generate the new key with the next available number
+                const newKey = `${nextAvailableKey}`;
+
+                console.log(`Generated newKey: ${newKey}`);
+
+                // Save the NGO data array in Firebase under DataToVerify
+                set(ref(db, `DonationDataToVerify/${newKey}`), newData)
+                    .then(() => {
+                        console.log("Data Added Successfully");
+                        // Show success message
+                        setIsSubmitted(true);
+
+                        // Optionally hide the message after a few seconds
+                        setTimeout(() => setIsSubmitted(false), 3000);
+
+
+                    })
+                    .catch(error => {
+                        console.error("Error adding data:", error);
+                    });
+
+            })
+            .catch((error) => {
+                console.error("Error fetching data:", error);
+            });
     };
+
+
+
 
     return (
         <>
@@ -323,74 +429,100 @@ const Body = () => {
                     {isSubmitted && <p>Data submitted successfully!</p>}
                 </div>
 
+
                 {/* Form 2: Donation Data */}
                 <div>
-                    <form className='px-3 py-3' onSubmit={handleSubmitDonation}>
+                    <form className='px-3 py-3' onSubmit={handleSubmitNGODonationData}>
                         <h6 className="mt-1 text-sm leading-6 text-gray-600 ">
                             Donation Data. Please provide all the information about the donation.
                         </h6>
 
-                        {/* Donor Name */}
+                        {/* NGO Name For Donation*/}
                         <div className='flex gap-5 py-2'>
                             <div className='w-44'>
-                                <label htmlFor="donorName" className='font-bold w-30'>Donor Name</label>
+                                <label htmlFor="ngoNameForDonation" className='font-bold w-30'>NGO Name</label>
                             </div>
                             <input
                                 type="text"
-                                id="donorName"
+                                id="ngoNameForDonation"
+                                onChange={handleNGODonationDataChange}
                                 name="0" // Store in the first index of the Donation array
-                                placeholder="Donor Name"
+                                placeholder="NGO Name"
                                 className='w-60'
                                 required
                             />
                         </div>
 
-                        {/* Donation Amount */}
+                        {/* NGO Fund Usage */}
                         <div className='flex gap-5 py-2'>
                             <div className='w-44'>
-                                <label htmlFor="donationAmount" className='font-bold w-30'>Donation Amount</label>
+                                <label htmlFor="ngoFundUsage" className='font-bold w-30'>Fund Usage</label>
                             </div>
                             <input
                                 type="text"
-                                id="donationAmount"
+                                id="ngoFundUsage"
+                                onChange={handleNGODonationDataChange}
                                 name="1" // Store in the second index of the Donation array
-                                placeholder="Donation Amount"
+                                placeholder="Fund Use For"
                                 className='w-60'
                                 required
                             />
                         </div>
 
-                        {/* Donation NGO ID */}
+                        {/*NGO Image Link*/}
                         <div className='flex gap-5 py-2'>
                             <div className='w-44'>
-                                <label htmlFor="donationNgoId" className='font-bold w-30'>NGO ID</label>
+                                <label htmlFor="ngoImageLink" className='font-bold w-30'>NGO Image Link</label>
                             </div>
                             <input
-                                type="text"
-                                id="donationNgoId"
+                                type="link"
+                                id="ngoImageLink"
+                                onChange={handleNGODonationDataChange}
                                 name="2" // Store in the third index of the Donation array
-                                placeholder="Donation NGO ID"
+                                placeholder="NGO Image Link"
                                 className='w-60'
                                 required
                             />
                         </div>
 
-                        {/* Donation Date */}
+                        {/* Donation Page Link*/}
                         <div className='flex gap-5 py-2'>
                             <div className='w-44'>
-                                <label htmlFor="donationDate" className='font-bold w-30'>Donation Date</label>
+                                <label htmlFor="donationPageLink" className='font-bold w-30'>Donation Page Link</label>
                             </div>
                             <input
-                                type="date"
-                                id="donationDate"
+                                type="link"
+                                id="donationPageLink"
+                                onChange={handleNGODonationDataChange}
+                                placeholder="NGO Doantion Page Link"
                                 name="3" // Store in the fourth index of the Donation array
                                 className='w-60'
                                 required
                             />
                         </div>
 
+                        {/* NGO Official Site Link*/}
+                        <div className='flex gap-5 py-2'>
+                            <div className='w-44'>
+                                <label htmlFor="ngoSiteLink" className='font-bold w-30'>NGO Site Link</label>
+                            </div>
+                            <input
+                                type="link"
+                                id="ngoSiteLink"
+                                onChange={handleNGODonationDataChange}
+                                name="3" // Store in the fourth index of the Donation array
+                                className='w-60'
+                                placeholder="NGO Site Link"
+                                required
+                            />
+                        </div>
+
                         <button type="submit" className='bg-green-500 text-white px-3 py-2 rounded-md'>Submit Donation</button>
+                        <button type="reset" className='bg-green-500 text-white px-3 py-2 ml-6 rounded-md'>Reset</button>
+
                     </form>
+                    {/* Show success message */}
+                    {isSubmitted && <p>Data submitted successfully!</p>}
                 </div>
             </div>
         </>
