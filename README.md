@@ -67,3 +67,4 @@ This project is deployed on Vercel. To deploy your own version:
 * **NGO Finder App on Play Store** https://play.google.com/store/apps/details?id=com.tlc.findngo 
 * **Email** ashusriwastav58@gmail.com
 * **Instagram** https://www.instagram.com/the_learners_community_dusol/
+* **Live** https://ngo-finder.vercel.app/
