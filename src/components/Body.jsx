@@ -282,8 +282,8 @@ const Body = () => {
         
             {/*Table  */}
             <div className='overflow-x-auto'>
-                <table className='border-separate border-spacing-0.5 border border-slate-500 table-fixe'>
-                    <tr>
+                <table className='border-separate border-spacing-0.5 border border-slate-500 table-fixe '>
+                    <tr className='bg-slate-200'>
                         <th className='border-separate border-spacing-0.5 border border-slate-500'>Name</th>
                         <th className='border-separate border-spacing-0.5 border border-slate-500'>Address</th>
                         <th className='border-separate border-spacing-0.5 border border-slate-500'>Phone No</th>
@@ -296,7 +296,7 @@ const Body = () => {
                     </tr>
 
                     {NGODataForTable.map((val, index) => (
-                        <tr key={index}>
+                        <tr key={index} className='hover:bg-slate-200 hover:font-semibold	'>
                             <td className='border-separate border-spacing-0.5 border border-slate-500 text-sm'>{val[1][0]}</td>
                             <td className='border-separate border-spacing-0.5 border border-slate-500 text-sm'>{val[1][1]}</td>
                             <td className='border-separate border-spacing-0.5 border border-slate-500 text-sm'>{val[1][3]}</td>
@@ -314,7 +314,7 @@ const Body = () => {
             </div>
 
 
-            <div className='flex flex-col justify-around md:flex-row sm:flex-col'>
+            <div className='flex flex-col justify-around md:flex-row sm:flex-col bg-amber-200 py-8'>
                 {/* Form 1: NGO Details */}
                 <div>
                     <form className='px-3 py-3 sm:text-1' onSubmit={handleSubmitNGO} id='NGODataForm'>
@@ -584,6 +584,7 @@ const Body = () => {
                     {isSubmitted && <p>Data submitted successfully!</p>}
                 </div>
             </div>
+            
         </>
     );
 };
