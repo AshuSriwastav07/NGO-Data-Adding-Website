@@ -277,9 +277,9 @@ const Body = () => {
 
 
     return (
-        
+
         <>
-        
+
             {/*Table  */}
             <div className='overflow-x-auto'>
                 <table className='border-separate border-spacing-0.5 border border-slate-500 table-fixe '>
@@ -584,7 +584,7 @@ const Body = () => {
                     {isSubmitted && <p>Data submitted successfully!</p>}
                 </div>
             </div>
-            
+
         </>
     );
 };
