@@ -6,6 +6,7 @@ const Body = () => {
 
 
     const [CurrentNGOData, setCurrentNGOData] = useState(0);
+    const [NGODataForTable, setNGODataForTable] = useState([]);
     const [CurrentNGONonVerifyData, setCurrentNGONonVerifyData] = useState(0);
     const [CurrentDonationNGOData, setCurrentDonationNGOData] = useState(0);
     const [NonVerifyDonationNGOData, setNonVerifyDonationNGOData] = useState(0);
@@ -189,7 +190,7 @@ const Body = () => {
 
 
     };
-    
+
 
     const handleSubmitNGODonationData = (event) => {
         event.preventDefault();
@@ -251,10 +252,68 @@ const Body = () => {
     };
 
 
+    // Get Data for Table
+    useEffect(() => {
+        const db = getDatabase();
+
+        // Fetch NGO data from 'NGO_DATA' node
+        const dataForTable = ref(db, 'NGO_DATA');
+        onValue(dataForTable, (snapshot) => {
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+
+                // Convert the object into an array of [key, value] pairs
+                const dataArray = Object.entries(data);
+                setNGODataForTable(dataArray);
+            } else {
+                console.log("No NGO data found.");
+                setNGODataForTable([]);
+            }
+        }, (error) => {
+            console.error("Error fetching NGO data:", error);
+            setNGODataForTable([]);
+        });
+    }, []);
 
 
     return (
+        
         <>
+        
+            {/*Table  */}
+            <div className='overflow-x-auto'>
+                <table className='border-separate border-spacing-0.5 border border-slate-500 table-fixe'>
+                    <tr>
+                        <th className='border-separate border-spacing-0.5 border border-slate-500'>Name</th>
+                        <th className='border-separate border-spacing-0.5 border border-slate-500'>Address</th>
+                        <th className='border-separate border-spacing-0.5 border border-slate-500'>Phone No</th>
+                        <th className='border-separate border-spacing-0.5 border border-slate-500'>Email</th>
+                        <th className='border-separate border-spacing-0.5 border border-slate-500'>Type</th>
+                        <th className='border-separate border-spacing-0.5 border border-slate-500'>Unique ID</th>
+                        <th className='border-separate border-spacing-0.5 border border-slate-500'>NGO Image</th>
+                        <th className='border-separate border-spacing-0.5 border border-slate-500'>Sector</th>
+                        <th className='border-separate border-spacing-0.5 border border-slate-500'>NGO Website</th>
+                    </tr>
+
+                    {NGODataForTable.map((val, index) => (
+                        <tr key={index}>
+                            <td className='border-separate border-spacing-0.5 border border-slate-500 text-sm'>{val[1][0]}</td>
+                            <td className='border-separate border-spacing-0.5 border border-slate-500 text-sm'>{val[1][1]}</td>
+                            <td className='border-separate border-spacing-0.5 border border-slate-500 text-sm'>{val[1][3]}</td>
+                            <td className='w-[10%] border-separate border-spacing-0.5 border border-slate-500 text-sm '>{val[1][4]}</td>
+                            <td className='border-separate border-spacing-0.5 border border-slate-500 text-sm'>{val[1][5]}</td>
+                            <td className='border-separate border-spacing-0.5 border border-slate-500 text-sm'>{val[1][6]}</td>
+                            <td className='border-separate border-spacing-0.5 border border-slate-500'><img src={val[1][7]} alt="NGO LOGO" className='h-24 w-24' /></td>
+                            <td className='border-separate border-spacing-0.5 border border-slate-500 text-sm'>{val[1][8]}</td>
+                            <td className='border-separate border-spacing-0.5 border border-slate-500 text-sm'>
+                                <button className='bg-blue-500 text-white px-4 py-2 rounded'><a href={val[1][9]} target='_balnk'>Check Website</a></button></td>
+                        </tr>
+                    ))}
+
+                </table>
+            </div>
+
+
             <div className='flex flex-col justify-around md:flex-row sm:flex-col'>
                 {/* Form 1: NGO Details */}
                 <div>
